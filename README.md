@@ -1,4 +1,4 @@
-# 🔍 Sistema Multimodal de Detección de Grietas, Inclinación y Riesgo Estructural
+#  Sistema Multimodal de Detección de Grietas, Inclinación y Riesgo Estructural
 
 **Asignatura:** Algoritmos y Programación (2026-2)  
 **Institución:** Universidad Industrial de Santander (UIS)  
@@ -6,7 +6,7 @@
 
 ---
 
-## 📌 Descripción del Proyecto
+##  Descripción del Proyecto
 Este proyecto consiste en un prototipo funcional de extremo a extremo (*end-to-end*) diseñado para asistir en la inspección visual de patologías en concreto (muros, vigas, columnas y losas). Combina técnicas avanzadas de **Visión por Computadora** en OpenCV, análisis morfológico multiescala y una interfaz interactiva desplegada en **Streamlit**.
 
 ### Capacidades Principales:
@@ -17,7 +17,7 @@ Este proyecto consiste en un prototipo funcional de extremo a extremo (*end-to-e
 
 ---
 
-## 📁 Estructura del Repositorio
+##  Estructura del Repositorio
 
 ```text
 Proyecto ia/

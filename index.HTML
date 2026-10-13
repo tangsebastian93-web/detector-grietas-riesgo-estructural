@@ -1,0 +1,73 @@
+<!-- ================================================================= -->
+<!-- 1. BLOQUE DE LA CÁMARA (Copia y pega esto donde quieras ver el video) -->
+<!-- ================================================================= -->
+<div style="text-align: center; border: 1px solid #ccc; padding: 15px; border-radius: 8px; margin: 15px 0;">
+    <h3>Cámara de Inspección en Vivo</h3>
+    
+    <!-- Cuadro donde se muestra el video del portátil -->
+    <video id="webcam" autoplay playsinline width="400" height="300" style="background-color: #000; border-radius: 5px;"></video>
+    
+    <!-- Canvas para tomar la captura (permanece oculto) -->
+    <canvas id="canvas-foto" width="400" height="300" style="display: none;"></canvas>
+
+    <div style="margin-top: 10px;">
+        <button type="button" onclick="encenderCamara()">Encender Cámara</button>
+        <button type="button" onclick="tomarFotoYEnviar()">Tomar Foto y Analizar</button>
+    </div>
+
+    <!-- Texto con la respuesta de Python -->
+    <p id="texto-estado" style="font-weight: bold; margin-top: 10px; color: #333;"></p>
+</div>
+
+<!-- ================================================================= -->
+<!-- 2. CÓDIGO DE CONTROL (Copia y pega esto justo antes de </body>) -->
+<!-- ================================================================= -->
+<script>
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('canvas-foto');
+    const estado = document.getElementById('texto-estado');
+
+    // Función para encender la cámara web de la laptop
+    function encenderCamara() {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+            .then(stream => {
+                video.srcObject = stream;
+                estado.innerText = "Cámara encendida. Apunta a la grieta y haz clic en 'Tomar Foto y Analizar'.";
+            })
+            .catch(err => {
+                alert("Debes aceptar los permisos del navegador para acceder a la cámara.");
+            });
+    }
+
+    // Función para capturar la imagen y mandarla a Python (app.py)
+    function tomarFotoYEnviar() {
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const fotoBase64 = canvas.toDataURL('image/jpeg');
+
+        estado.innerText = "Enviando imagen y analizando...";
+        fetch('/analizar-camara', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: fotoBase64 })
+        })
+        .then(res => res.json())
+        .then(datos => {
+            estado.innerText = "Resultado: " + datos.diagnostico + " (" + datos.nivel_riesgo + ")";
+        })
+        .catch(error => {
+            estado.innerText = "Error al conectar con el servidor Python.";
+        });
+    }
+</script>
+
+<div style="margin-top: 10px;">
+        <button type="button" onclick="encenderCamara()">Encender Cámara</button>
+        <button type="button" onclick="tomarFotoYEnviar()">Tomar Foto y Analizar</button>
+    </div>
+
+    <!-- AQUÍ AGREGAS EL CHECKBOX -->
+    <div style="margin-top: 15px; background: #eee; padding: 10px; border-radius: 5px;">
+        <input type="checkbox" id="check-recorte">
+        <label for="check-recorte">🔍 Aplicar recorte/zoom automático (solo si está muy lejos)</label>
+    </div>

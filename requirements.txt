@@ -4,3 +4,7 @@ pandas
 numpy
 requests
 mysql-connector-python
+tensorflow
+scikit-learn
+seaborn
+matplotlib

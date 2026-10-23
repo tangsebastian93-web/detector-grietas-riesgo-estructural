@@ -1,37 +1,38 @@
-#  Sistema Multimodal de Detección de Grietas, Inclinación y Riesgo Estructural
+# Sistema Multimodal de Detección de Grietas, Inclinación y Riesgo Estructural
 
-**Asignatura:** Algoritmos y Programación (2026-2)  
 **Institución:** Universidad Industrial de Santander (UIS)  
-**Proyecto:** Reto de Detección de Grietas, Inclinación y Riesgo en Edificaciones (Fase 1)
+**Asignatura:** Algoritmos y Programación  
+**Normativa de Referencia:** NSR-10 (Colombia) / ACI 224R-01  
 
 ---
 
-##  Descripción del Proyecto
-Este proyecto consiste en un prototipo funcional de extremo a extremo (*end-to-end*) diseñado para asistir en la inspección visual de patologías en concreto (muros, vigas, columnas y losas). Combina técnicas avanzadas de **Visión por Computadora** en OpenCV, análisis morfológico multiescala y una interfaz interactiva desplegada en **Streamlit**.
+## Descripción del Proyecto
 
-### Capacidades Principales:
-1. **Diagnóstico con IA:** Clasificador binario `Con Grieta` / `Sin Grieta` con Transfer Learning (MobileNetV2), entrenado en `notebooks/01_analisis_y_linea_base.ipynb` y guardado como `modelo_grietas.h5`. Devuelve la probabilidad de grieta.
-2. **Medición de Fisuras:** Detección por filtro de valles oscuros e histéresis. El ancho se mide con `cv2.distanceTransform` sobre la máscara: ancho local = 2 × distancia en el eje central. Se expresa en píxeles y en mm si hay calibración física.
-3. **Desplome del Muro o Columna:** Canny + `cv2.HoughLinesP` sobre los bordes verticales del elemento. El ángulo respecto a la vertical ($0^\circ$) es la mediana ponderada de esas líneas. La fisura no interviene en este cálculo.
-4. **Persistencia e Integración:** Exportación de informes estructurados en JSON, registro histórico en base de datos MySQL e integración de hardware mediante ESP8266 / HC-SR04.
-
-> **Dataset:** colocar las imágenes en `data/dataset_grietas/Positive/` (con grieta) y `data/dataset_grietas/Negative/` (sin grieta) antes de ejecutar el cuaderno.
+Sistema experto de inspección patológica *end-to-end* diseñado para evaluar fisuras e inclinaciones en elementos de concreto (columnas, vigas, losas y muros)[cite: 13]. El software integra un enfoque **híbrido** que combina Inteligencia Artificial (redes neuronales convolucionales) para el reconocimiento de contexto[cite: 13] y Visión por Computadora clásica para la caracterización geométrica de precisión y evaluación de riesgo bajo norma técnica[cite: 13].
 
 ---
 
-##  Estructura del Repositorio
+## Capacidades Principales
+
+1. **Diagnóstico con IA:** Clasificación binaria (*Con Grieta* / *Sin Grieta*) empleando Transfer Learning (**MobileNetV2**)[cite: 13] entrenado sobre imágenes estructurales reales (`modelo_grietas.h5`).
+2. **Evaluación de Ancho Crítico ($w_{\text{máx}}$):** Aislamiento multirrama mediante filtros morfológicos (Frangi / Valles oscuros) y medición por **Transformada de Distancia ($L_2$)**. El dictamen evalúa el espesor medio máximo entre todas las ramas detectadas para garantizar seguridad en la inspección[cite: 13].
+3. **Cálculo de Desaplome / Inclinación:** Detección de bordes verticales mediante **Canny** y la **Transformada de Hough Lineal Adaptativa** (`cv2.HoughLinesP`) para medir desviaciones angulares respecto a la vertical ($0^\circ$) en elementos portantes[cite: 13].
+4. **Matriz de Riesgo Normativo (NSR-10 / ACI 224R-01):** Clasificación del nivel de peligro (*Bajo*, *Moderado*, *Alto*, *Crítico*) cruzando la apertura en milímetros y el desplome frente al elemento inspeccionado ($0.3\text{ mm}$ en columnas, $0.4\text{ mm}$ en vigas y $1.0\text{ mm}$ en muros divisorios).
+5. **Persistencia e Informes:** Integración con base de datos **MySQL** para registro de auditoría e historial de inspecciones, más exportación de diagnósticos en formato **JSON**[cite: 13].
+
+---
+
+## Estructura del Repositorio
 
 ```text
 Proyecto ia/
-├── data/
-│   └── imagenes_propias/          # Fotografías de prueba en entorno real
-├── notebooks/
-│   └── 01_analisis_y_linea_base.ipynb # EDA, preprocesamiento y entrenamiento CNN
-├── sql/
-│   └── detctor_de_grietas.SQL     # Script de creación de la base de datos MySQL
-├── src/
-│   ├── paginaweb.py               # Aplicación principal en Streamlit
-│   └── index.html                 # Vista HTML secundaria
-├── .gitignore                     # Archivos excluidos del control de versiones
-├── README.md                      # Documentación del proyecto
-└── requirements.txt               # Librerías y dependencias necesarias
+├── data/                       # Dataset e imágenes de prueba en entorno real
+├── notebooks/                  # EDA, procesamiento e hiperparámetros de MobileNetV2
+├── sql/                        # Script DDL de la base de datos MySQL
+├── src/                        # Código fuente de la aplicación
+│   ├── paginaweb.py            # Interfaz interactiva principal (Streamlit)
+│   └── index.html              # Vista secundaria / landing
+├── modelo_grietas.h5           # Pesos del modelo de IA entrenado
+├── requirements.txt            # Dependencias del proyecto Python
+├── .gitignore                  # Archivos excluidos de control de versiones
+└── README.md                   # Documentación principal del sistema

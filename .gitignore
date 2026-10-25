@@ -6,3 +6,12 @@ downloads/
 .agents/
 .claude/
 .DS_Store
+# Datasets e imágenes pesadas
+data/
+dataset_grietas/
+*.jpg
+*.jpeg
+*.png
+
+# Pesos de modelos pesados
+*.h5
